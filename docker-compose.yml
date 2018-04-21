@@ -23,8 +23,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - web-volume:/usr/src/app/static
-    env_file: .env
+      - web-volume:/usr/src/app/static    
     networks:
       - webnet
     command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
