@@ -1,10 +1,5 @@
 version: "3"
 
-################# VOLUMES ######################
-volumes:
-  data-volume:
-    # driver:
-  web-volume:
 
 services:
 
@@ -23,7 +18,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - web-volume:/usr/src/app/static    
+      - web-volume:/usr/src/app/static
     networks:
       - webnet
     command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
@@ -55,7 +50,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - web-volume:/www/static
+      - /www/static
+      - web-volume:/usr/src/app/static
+
     networks:
       - webnet
 
@@ -72,11 +69,13 @@ services:
         constraints: [node.role == manager]
     image: postgres:latest
     volumes:
-      - data-volume:/var/lib/postgresql
+      - data-volume:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
       - webnet
+    environment: # named volume fix. see https://github.com/docker-library/postgres/issues/263
+      - PGDATA=/var/lib/postgresql/data/db-files/
   # redis:
   #   image: redis
   #   ports:
@@ -89,5 +88,13 @@ services:
   #   command: redis-server --appendonly yes
   #   networks:
   #     - webnet
+
+################# VOLUMES ######################
+
+volumes:
+  data-volume:
+    driver: local
+  web-volume:
+
 networks:
   webnet:
