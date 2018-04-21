@@ -1,0 +1,94 @@
+version: "3"
+
+################# VOLUMES ######################
+volumes:
+  data-volume:
+    # driver:
+  web-volume:
+
+services:
+
+  ################# WEB_APP ######################
+  web:
+    image: myregistry.com:5000/flask-gunicorn:latest
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - web-volume:/usr/src/app/static
+    env_file: .env
+    networks:
+      - webnet
+    command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
+
+  ################# SWARM_VISUALIZER ######################
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+
+  ################# NGINX_WEB_SERVER ######################
+  nginx:
+    image:  myregistry.com:5000/swarm-nginx:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+    ports:
+      - "80:80"
+    volumes:
+      - web-volume:/www/static
+    networks:
+      - webnet
+
+  ################# POSTGRES_DB ######################
+  postgres:
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      placement:
+        constraints: [node.role == manager]
+    image: postgres:latest
+    volumes:
+      - data-volume:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - webnet
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - "/home/ubuntu/data:/data"
+  #   deploy:
+  #     placement:
+  #       constraints: [node.role == manager]
+  #   command: redis-server --appendonly yes
+  #   networks:
+  #     - webnet
+networks:
+  webnet:
