@@ -12,3 +12,6 @@ docker-compose run web /usr/local/bin/python create_db.py
 ### Resources
 - [Official Docs](https://docs.docker.com/get-started/)
 - [RealPython - Dockerizing flask](https://realpython.com/dockerizing-flask-with-compose-and-machine-from-localhost-to-the-cloud/)
+- [Play With Docker](https://training.play-with-docker.com/)
+- [3.0 Deploying an app to a Swarm](https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md)
+- [Example Voting App](https://github.com/dockersamples/example-voting-app)
