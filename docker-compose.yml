@@ -52,7 +52,6 @@ services:
     volumes:
       - /www/static
       - web-volume:/usr/src/app/static
-
     networks:
       - webnet
 

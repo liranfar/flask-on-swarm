@@ -1,7 +1,7 @@
 ## Dockerizing Flask, Nginx, Postgres on Swarm using local registry
 if you are unfamiliar with configuring your local docker registry - check out [local-registry-swarm](https://github.com/liranfar/local-registry-swarm) repo.
 ### Usage
-```
+```bash
 eval $(docker-machine env master)
 docker build ./web -t myregistry.com:5000/flask-gunicorn:latest
 docker push myregistry.com:5000/flask-gunicorn:latest
